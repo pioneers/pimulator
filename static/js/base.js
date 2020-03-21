@@ -38,5 +38,7 @@ function start() {
     req("/start", false)
     screenUpdate = setInterval(update, 50);
 }
-
-
+function starting(){
+  req("/starting", false)
+  screenUpdate = setInterval(update, 50)
+}

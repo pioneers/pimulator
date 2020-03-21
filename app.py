@@ -1,13 +1,19 @@
 import datetime
 import time
 import robot
-
+import sys
 from flask import Flask, render_template, jsonify
 app = Flask(__name__)
 
 @app.route('/start')
 def start():
+    print('Hello world!', file=sys.stderr)
     return str(robot.start())
+
+@app.route('/starting')
+def starting():
+    print('Hello!', file=sys.stderr)
+    return str(robot.start1())
 
 @app.route('/stop')
 def stop():

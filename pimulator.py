@@ -4,7 +4,7 @@ import warnings
 import time
 import inspect
 import os
-
+import threading
 # termcolor is an optional package
 try:
     from termcolor import colored
@@ -43,7 +43,7 @@ class RobotClass:
 
     def update_position(self):
         """Updates position of the  Robot using differential drive equations
-        
+
         Derived with reference to:
         https://chess.eecs.berkeley.edu/eecs149/documentation/differentialDrive.pdf
         """
@@ -114,21 +114,21 @@ class RobotClass:
         elif not inspect.iscoroutinefunction(fn):
             raise ValueError("First argument to Robot.run must be defined with `async def`, not `def`")
 
-        if fn in self.running_coroutines:
-            return
+        #if fn in self.running_coroutines:
+        #    return
 
-        self.running_coroutines.add(fn)
+        #self.running_coroutines.add(fn)
 
         # Calling a coroutine does not execute it
         # Rather returns  acoroutine object
-        future = fn(*args, **kwargs)
+        #future = fn(*args, **kwargs)
 
-        async def wrapped_future():
-            await future
-            self.running_coroutines.remove(fn)
-
+        #async def wrapped_future():
+            #await future
+            #self.running_coroutines.remove(fn)
+        asyncio.run(fn(*args, **kwargs))
         # asyncio.ensure_future(wrapped_future())
-        asyncio.ensure_future(wrapped_future())
+        #asyncio.ensure_future(wrapped_future())
 
     def is_running(self, fn):
         """
@@ -457,8 +457,8 @@ class Simulator:
 
     def consistent_loop(self, period, func):
         """Execute the robot at specificed frequency.
-        
-        period (int): the period in seconds to run func in 
+
+        period (int): the period in seconds to run func in
         func (function): the function to execute each loop
 
         func may take only TIMEOUT_VALUE seconds to finish execution
@@ -482,10 +482,16 @@ class Simulator:
 
         Run setup_fn once before continuously looping loop_fn
         """
-        self.teleop_setup()
-        self.robot.update_position()
-        self.consistent_loop(self.robot.tick_rate, self.teleop_main)
+        robot_thread = threading.Thread(group=None, target=self.autonomous_setup,
+                                        name="robot thread", daemon=True)
+        self.consistent_loop(self.robot.tick_rate,self.robot.update_position)
+        #self.consistent_loop(self.robot.tick_rate, self.teleop_main)
 
 def main(queue):
     simulator = Simulator(queue)
+    simulator.simulate()
+
+def test(queue):
+    simulator = Simulator(queue)
+    print(3)
     simulator.simulate()
