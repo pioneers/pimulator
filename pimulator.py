@@ -4,6 +4,7 @@ import warnings
 import time
 import inspect
 import os
+from pynput.keyboard import Listener
 
 # termcolor is an optional package
 try:
@@ -160,6 +161,10 @@ class GamepadClass:
              [ 3,  3,  3,  3]]
             ]
 
+    COMBINATIONS = [
+    {keyboard.Key.ctrl_l, keyboard.KeyCode(char='c')},
+    {keyboard.Key.ctrl_r, keyboard.KeyCode(char='c')}
+    ]
 
     def __init__(self, set_num):
         self.set_num = set_num
@@ -485,7 +490,25 @@ class Simulator:
         self.teleop_setup()
         self.robot.update_position()
         self.consistent_loop(self.robot.tick_rate, self.teleop_main)
+   
+    def translate_to_movement(key):
+        direction = str(key)
+        if direction == 'w':
+            self.gamepad.joystick_left_y = 1
+           
+        elif direction == 'd':
+            self.gamepad.joystick_left_x = 1
+            
+        elif direction == 'a':
+            self.gamepad.joystick_left_a = -1
+        elif direction == 's':
+            self.gamepad.joystick_left_y = -1
+        self.robot.update_position()
+    
+    def keyboard_control(self):
+        with Listener(on_press=translate_to_movement) as l:
+            l.join()
 
 def main(queue):
     simulator = Simulator(queue)
-    simulator.simulate()
+    simulator.keyboard_control()
