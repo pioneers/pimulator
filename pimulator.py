@@ -5,6 +5,7 @@ import time
 import inspect
 import os
 import threading
+import multiprocessing
 import sys
 # termcolor is an optional package
 try:
@@ -12,7 +13,7 @@ try:
 except ModuleNotFoundError:
     colored = lambda x, y: x
 
-
+robot_on = False
 SCREEN_HEIGHT = 48
 SCREEN_WIDTH = 48
 
@@ -464,7 +465,8 @@ class Simulator:
 
         func may take only TIMEOUT_VALUE seconds to finish execution
         """
-        while True:
+        print(robot_on, file=sys.stderr)
+        while robot_on:
             next_call = time.time() + period
 
             self.loop_content(func)
@@ -490,8 +492,13 @@ class Simulator:
     def simulate_auto(self):
         auto_thread = threading.Thread(group=None, target=self.autonomous_setup,
                                         name="autonomous code thread", daemon=True)
+        # auto_thread = multiprocessing.Process(group=None, target=autonomous_setup_toplevel, args=(self,),
+        #                                 name="autonomous code thread", daemon=True)
         auto_thread.start()
         self.consistent_loop(self.robot.tick_rate,self.robot.update_position)
+
+def autonomous_setup_toplevel(sim):
+    sim.autonomous_setup()
 
 def main(queue, auto):
     simulator = Simulator(queue)
