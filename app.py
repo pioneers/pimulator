@@ -5,15 +5,15 @@ import sys
 from flask import Flask, render_template, jsonify
 app = Flask(__name__)
 
-@app.route('/start')
-def start():
-    print('Hello world!', file=sys.stderr)
-    return str(robot.start())
+@app.route('/start_teleop')
+def start_teleop():
+    print('Starting Teleop Mode!', file=sys.stderr)
+    return str(robot.start(auto=0))
 
-@app.route('/starting')
-def starting():
-    print('Hello!', file=sys.stderr)
-    return str(robot.start1())
+@app.route('/start_auto')
+def start_auto():
+    print('Starting Autonomous Mode!', file=sys.stderr)
+    return str(robot.start(auto=1))
 
 @app.route('/stop')
 def stop():

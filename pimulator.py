@@ -5,6 +5,7 @@ import time
 import inspect
 import os
 import threading
+import sys
 # termcolor is an optional package
 try:
     from termcolor import colored
@@ -19,7 +20,7 @@ SCREEN_WIDTH = 48
 class RobotClass:
     """The MODEL for this simulator. Stores robot data and handles position
        calculations & Runtime API calls """
-    tick_rate = 0.1             # in s
+    tick_rate = 0.05             # in s
     width = 12                  # width of robot , inches
     w_radius = 2                # radius of a wheel, inches
     MAX_X = 143                 # maximum X value, inches, field is 12'x12'
@@ -47,7 +48,7 @@ class RobotClass:
         Derived with reference to:
         https://chess.eecs.berkeley.edu/eecs149/documentation/differentialDrive.pdf
         """
-        lv = self.Wl * RobotClass.w_radius * RobotClass.neg
+        lv = self.Wl * RobotClass.w_radius # * RobotClass.neg
         rv = self.Wr * RobotClass.w_radius
         radian = math.radians(self.dir)
         if (lv == rv):
@@ -477,21 +478,24 @@ class Simulator:
         self.robot.update_position()
         # self.robot.print_state()
 
-    def simulate(self):
+    def simulate_teleop(self):
         """Simulate execution of the robot code.
 
         Run setup_fn once before continuously looping loop_fn
         """
-        robot_thread = threading.Thread(group=None, target=self.autonomous_setup,
-                                        name="robot thread", daemon=True)
+        self.teleop_setup()
+        self.robot.update_position()
+        self.consistent_loop(self.robot.tick_rate, self.teleop_main)
+
+    def simulate_auto(self):
+        auto_thread = threading.Thread(group=None, target=self.autonomous_setup,
+                                        name="autonomous code thread", daemon=True)
+        auto_thread.start()
         self.consistent_loop(self.robot.tick_rate,self.robot.update_position)
-        #self.consistent_loop(self.robot.tick_rate, self.teleop_main)
 
-def main(queue):
+def main(queue, auto):
     simulator = Simulator(queue)
-    simulator.simulate()
-
-def test(queue):
-    simulator = Simulator(queue)
-    print(3)
-    simulator.simulate()
+    if auto:
+        simulator.simulate_auto()
+    else:
+        simulator.simulate_teleop()
