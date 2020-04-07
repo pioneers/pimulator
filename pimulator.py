@@ -4,7 +4,9 @@ import warnings
 import time
 import inspect
 import os
+from pynput import keyboard
 from pynput.keyboard import Listener
+
 
 # termcolor is an optional package
 try:
@@ -161,10 +163,61 @@ class GamepadClass:
              [ 3,  3,  3,  3]]
             ]
 
-    COMBINATIONS = [
-    {keyboard.Key.ctrl_l, keyboard.KeyCode(char='c')},
-    {keyboard.Key.ctrl_r, keyboard.KeyCode(char='c')}
+    # COMBINATIONS = [
+    # {keyboard.Key.up, keyboard.KeyCode(char='w')},
+    # {keyboard.Key.up, keyboard.KeyCode(char='d')},
+    # {keyboard.Key.up, keyboard.KeyCode(char='a')},
+    # {keyboard.Key.up, keyboard.KeyCode(char='s')},
+
+    # {keyboard.Key.left, keyboard.KeyCode(char='w')},
+    # {keyboard.Key.left, keyboard.KeyCode(char='d')},
+    # {keyboard.Key.left, keyboard.KeyCode(char='a')},
+    # {keyboard.Key.left, keyboard.KeyCode(char='s')},
+
+    # {keyboard.Key.right, keyboard.KeyCode(char='w')},
+    # {keyboard.Key.right, keyboard.KeyCode(char='d')},
+    # {keyboard.Key.right, keyboard.KeyCode(char='a')},
+    # {keyboard.Key.right, keyboard.KeyCode(char='s')},
+
+    # {keyboard.Key.down, keyboard.KeyCode(char='w')},
+    # {keyboard.Key.down, keyboard.KeyCode(char='d')},
+    # {keyboard.Key.down, keyboard.KeyCode(char='a')},
+    # {keyboard.Key.down, keyboard.KeyCode(char='s')},
+
+    # {keyboard.KeyCode(char='w'), keyboard.Key.down},
+    # {keyboard.KeyCode(char='d'), keyboard.Key.down},
+    # {keyboard.KeyCode(char='a'), keyboard.Key.down},
+    # {keyboard.KeyCode(char='s'), keyboard.Key.down},
+
+    # {keyboard.KeyCode(char='w'), keyboard.Key.left},
+    # {keyboard.KeyCode(char='d'), keyboard.Key.left},
+    # {keyboard.KeyCode(char='a'), keyboard.Key.left},
+    # {keyboard.KeyCode(char='s'), keyboard.Key.left},
+
+    # {keyboard.KeyCode(char='w'), keyboard.Key.right},
+    # {keyboard.KeyCode(char='d'), keyboard.Key.right},
+    # {keyboard.KeyCode(char='a'), keyboard.Key.right},
+    # {keyboard.KeyCode(char='s'), keyboard.Key.right},
+
+    # {keyboard.KeyCode(char='w'), keyboard.Key.up},
+    # {keyboard.KeyCode(char='d'), keyboard.Key.up},
+    # {keyboard.KeyCode(char='a'), keyboard.Key.up},
+    # {keyboard.KeyCode(char='s'), keyboard.Key.up}
+    # ]
+
+    COMBINATIONS1 = [
+        keyboard.KeyCode(char='w'),
+        keyboard.KeyCode(char='d'),
+        keyboard.KeyCode(char='a'),
+        keyboard.KeyCode(char='s')
     ]
+
+    COMBINATIONS2 = [
+        keyboard.Key.up,
+        keyboard.Key.left,
+        keyboard.Key.right,
+        keyboard.Key.down
+        ]
 
     def __init__(self, set_num):
         self.set_num = set_num
@@ -246,7 +299,7 @@ class Camera:
         self.robot = robot
         self.gamepad = gamepad
 
-    def direction(theta, label='*'):
+    def direction(self, theta, label='*'):
         """Generate a string that indicates pointing in a theta direction"""
         result = Camera.base.copy()
         result[2 * Camera.width + 4] = label
@@ -289,7 +342,7 @@ class Camera:
 
     def robot_direction(self):
         """Return a list of strings picturing the direction the robot is traveling in from an overhead view"""
-        return Camera.direction(self.robot.dir, Robot.symbol)
+        return Camera.direction(self.robot.dir, self.robot.symbol)
 
     def left_joystick(self):
         """Return a list of strings picturing the left joystick of the gamepad"""
@@ -299,7 +352,7 @@ class Camera:
         """Return a list of strings picturing the right joystick of the gamepad"""
         return Camera.direction(self.gamepad.rtheta(), 'R')
 
-    def wheel(theta, label='*'):
+    def wheel(self, theta, label='*'):
         """Generate a string picturing a wheel at position theta
 
         Args:
@@ -337,7 +390,7 @@ class Camera:
         """Return a list of strings picturing the left wheel"""
         return [colored(x, 'red') for x in Camera.wheel(self.robot.ltheta, 'L')]
 
-    def str_format(list_img):
+    def str_format(self, list_img):
         """Return a list of 5 strings each of length 9
 
         Args:
@@ -349,7 +402,7 @@ class Camera:
             result.append(''.join(segment))
         return result
 
-    def printer(formatted_list):
+    def printer(self, formatted_list):
         """Print a list of strings to graphically resemble it"""
         for x in formatted_list:
             print(x)
@@ -427,6 +480,7 @@ class Simulator:
         self.init_gamepad()
         self.actions = ActionsClass(self.robot)
         self.load_student_code()
+        self.current = set()
 
     def init_gamepad(self):
         control_types = ['tank', 'arcade', 'other1', 'other2']
@@ -491,24 +545,60 @@ class Simulator:
         self.robot.update_position()
         self.consistent_loop(self.robot.tick_rate, self.teleop_main)
    
-    def translate_to_movement(key):
-        direction = str(key)
-        if direction == 'w':
-            self.gamepad.joystick_left_y = 1
-           
-        elif direction == 'd':
-            self.gamepad.joystick_left_x = 1
-            
-        elif direction == 'a':
-            self.gamepad.joystick_left_a = -1
-        elif direction == 's':
-            self.gamepad.joystick_left_y = -1
-        self.robot.update_position()
+    
+    def on_press(self, key):
+        if len(self.current) == 0:
+            if (key in self.gamepad.COMBINATIONS1) or (key in self.gamepad.COMBINATIONS2):
+                self.current.add(key)
+                self.translate_to_movement()
+                return
+        elif len(self.current) == 1:
+            elem = self.current.pop()
+            self.current.add(elem)
+            if ((elem in self.gamepad.COMBINATIONS1) and (key in self.gamepad.COMBINATIONS2)) or ((elem in self.gamepad.COMBINATIONS2) and key in (key in self.gamepad.COMBINATIONS1)):
+                self.current.add(key)
+                self.translate_to_movement()
+        elif len(self.current) >= 2:
+            pass
+    
+    def on_release(self, key):
+        try:
+            self.current.remove(key)
+        except:
+            pass
+
+    def translate_to_movement(self):
+        for k in self.current:
+            if k == keyboard.KeyCode(char='w'):
+                self.gamepad.joystick_left_y = 1
+               
+            elif k == keyboard.KeyCode(char='d'):
+                self.gamepad.joystick_left_x = 1
+                
+            elif k == keyboard.KeyCode(char='a'):
+                self.gamepad.joystick_left_x = -1
+
+            elif k == keyboard.KeyCode(char='s'):
+                self.gamepad.joystick_left_y = -1
+
+            elif k == keyboard.Key.up:
+                self.gamepad.joystick_right_y = 1
+               
+            elif k == keyboard.Key.right:
+                self.gamepad.joystick_right_x = 1
+                
+            elif k == keyboard.Key.left:
+                self.gamepad.joystick_right_x = -1
+
+            elif k == keyboard.Key.down:
+                self.gamepad.joystick_right_y = -1
+
+            self.robot.update_position()
     
     def keyboard_control(self):
-        with Listener(on_press=translate_to_movement) as l:
+        with keyboard.Listener(on_press=self.on_press, on_release=self.on_release) as l:
             l.join()
 
-def main(queue):
+def main(self, queue):
     simulator = Simulator(queue)
     simulator.keyboard_control()
