@@ -548,7 +548,9 @@ class Simulator:
         """
         teleop_thread = threading.Thread(group=None, target=self.keyboard_control,
                                         name="keyboard thread", daemon=True)
+        print("initialized thread")
         teleop_thread.start()
+        print("thread started")
         self.consistent_loop(self.robot.tick_rate, self.robot.update_position)
 
     
