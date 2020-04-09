@@ -3,7 +3,6 @@ import multiprocessing
 import time
 import pimulator
 import queue
-import sys
 robot_thread = None
 state_queue = None
 
@@ -27,10 +26,8 @@ def start(auto=0):
         # do not exit gracefully from __main__
         robot_thread = threading.Thread(group=None, target=pimulator.main, args=(state_queue,auto),
                                         name="robot thread", daemon=True)
-        # robot_thread = multiprocessing.Process(group=None, target=pimulator.main, args=(state_queue,auto),
-        #                                 name="robot thread", daemon=True)
         robot_thread.start()
-        print("robot started", file = sys.stderr)
+        print("robot started")
         
         return True
 
