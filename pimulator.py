@@ -224,28 +224,43 @@ class GamepadClass:
     def __init__(self, set_num):
         self.set_num = set_num
         # self.t0 = time.time()
-        self.joystick_left_x = self.sets[set_num][0]
-        self.joystick_left_y =  self.sets[set_num][1]
-        self.joystick_right_x =  self.sets[set_num][2]
-        self.joystick_right_y =  self.sets[set_num][3]
+        # self.joystick_left_x = self.sets[set_num][0]
+        # self.joystick_left_y =  self.sets[set_num][1]
+        # self.joystick_right_x =  self.sets[set_num][2]
+        # self.joystick_right_y =  self.sets[set_num][3]
         # self.durations = self.sets[set_num][4]         #lst of instr duration
         # self.i = 0                                        #index of insturction
+        self.joystick_left_x =0
+        self.joystick_left_y = 0
+        self.joystick_right_x = 0
+        self.joystick_right_y = 0
 
     def get_value(self, device):
-        now = time.time()
-        timePassed = now - self.t0
-        if  (timePassed >= self.durations[self.i]):
-            self.i = (self.i + 1) % len(self.durations)
-            self.t0 = now
+        # now = time.time()
+        # timePassed = now - self.t0
+        # if  (timePassed >= self.durations[self.i]):
+        #     self.i = (self.i + 1) % len(self.durations)
+        #     self.t0 = now
+
+        # if (device == "joystick_left_x"):
+        #     return self.joystick_left_x[self.i]
+        # if (device == "joystick_left_y"):
+        #     return self.joystick_left_y[self.i]
+        # if (device == "joystick_right_x"):
+        #     return self.joystick_right_x[self.i]
+        # if (device == "joystick_right_y"):
+        #     return self.joystick_right_y[self.i]
+        # else:
+        #     raise KeyError("Cannot find input: " + device)
 
         if (device == "joystick_left_x"):
-            return self.joystick_left_x[self.i]
+            return self.joystick_left_x
         if (device == "joystick_left_y"):
-            return self.joystick_left_y[self.i]
+            return self.joystick_left_y
         if (device == "joystick_right_x"):
-            return self.joystick_right_x[self.i]
+            return self.joystick_right_x
         if (device == "joystick_right_y"):
-            return self.joystick_right_y[self.i]
+            return self.joystick_right_y
         else:
             raise KeyError("Cannot find input: " + device)
 
@@ -608,7 +623,6 @@ class Simulator:
         print("entered keyboard")
 
         with Listener(on_press=self.on_press, on_release=self.on_release) as l:
-            
             l.join()
 
         print("exited keyboard")
