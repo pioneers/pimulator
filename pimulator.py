@@ -6,8 +6,8 @@ import inspect
 import os
 from pynput import keyboard
 from pynput.keyboard import Listener
-
-
+import __future__
+import sys
 # termcolor is an optional package
 try:
     from termcolor import colored
@@ -551,7 +551,7 @@ class Simulator:
             if (key in self.gamepad.COMBINATIONS1) or (key in self.gamepad.COMBINATIONS2):
                 self.current.add(key)
                 self.translate_to_movement()
-                return
+                
         elif len(self.current) == 1:
             elem = self.current.pop()
             self.current.add(elem)
@@ -601,4 +601,5 @@ class Simulator:
 
 def main(self, queue):
     simulator = Simulator(queue)
+   
     simulator.keyboard_control()
