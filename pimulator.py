@@ -617,13 +617,8 @@ class Simulator:
     def simulate_auto(self):
         auto_thread = threading.Thread(group=None, target=self.autonomous_setup,
                                         name="autonomous code thread", daemon=True)
-        # auto_thread = multiprocessing.Process(group=None, target=autonomous_setup_toplevel, args=(self,),
-        #                                 name="autonomous code thread", daemon=True)
         auto_thread.start()
         self.consistent_loop(self.robot.tick_rate,self.robot.update_position)
-
-def autonomous_setup_toplevel(sim):
-    sim.autonomous_setup()
 
 def main(queue, auto, control):
     simulator = Simulator(queue)
