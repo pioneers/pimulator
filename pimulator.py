@@ -547,9 +547,10 @@ class Simulator:
 
         Run setup_fn once before continuously looping loop_fn
         """
-        self.teleop_setup()
-        self.robot.update_position()
-        self.consistent_loop(self.robot.tick_rate, self.keyboard_control)
+        teleop_thread = threading.Thread(group=None, target=self.keyboard_control,
+                                        name="keyboard thread", daemon=True)
+        teleop_thread.start()
+        self.consistent_loop(self.robot.tick_rate, self.robot.update_position)
 
     
     def on_press(self, key):
@@ -604,7 +605,7 @@ class Simulator:
     
     def keyboard_control(self):
         print("entered keyboard")
-        self.robot.set_value("left_motor", "duty_cycle", self.gamepad.get_value("joystick_left_y"))
+
         with Listener(on_press=self.on_press, on_release=self.on_release) as l:
             
             l.join()
