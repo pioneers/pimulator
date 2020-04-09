@@ -8,13 +8,16 @@ from pynput import keyboard
 from pynput.keyboard import Listener
 import __future__
 import sys
-# termcolor is an optional package
+import threading
+import multiprocessing
+
+#termcolor is an optional package
 try:
     from termcolor import colored
 except ModuleNotFoundError:
     colored = lambda x, y: x
 
-
+robot_on = False
 SCREEN_HEIGHT = 48
 SCREEN_WIDTH = 48
 
@@ -22,7 +25,7 @@ SCREEN_WIDTH = 48
 class RobotClass:
     """The MODEL for this simulator. Stores robot data and handles position
        calculations & Runtime API calls """
-    tick_rate = 0.1             # in s
+    tick_rate = 0.05             # in s
     width = 12                  # width of robot , inches
     w_radius = 2                # radius of a wheel, inches
     MAX_X = 143                 # maximum X value, inches, field is 12'x12'
@@ -46,11 +49,11 @@ class RobotClass:
 
     def update_position(self):
         """Updates position of the  Robot using differential drive equations
-        
+
         Derived with reference to:
         https://chess.eecs.berkeley.edu/eecs149/documentation/differentialDrive.pdf
         """
-        lv = self.Wl * RobotClass.w_radius * RobotClass.neg
+        lv = self.Wl * RobotClass.w_radius # * RobotClass.neg
         rv = self.Wr * RobotClass.w_radius
         radian = math.radians(self.dir)
         if (lv == rv):
@@ -117,21 +120,21 @@ class RobotClass:
         elif not inspect.iscoroutinefunction(fn):
             raise ValueError("First argument to Robot.run must be defined with `async def`, not `def`")
 
-        if fn in self.running_coroutines:
-            return
+        #if fn in self.running_coroutines:
+        #    return
 
-        self.running_coroutines.add(fn)
+        #self.running_coroutines.add(fn)
 
         # Calling a coroutine does not execute it
         # Rather returns  acoroutine object
-        future = fn(*args, **kwargs)
+        #future = fn(*args, **kwargs)
 
-        async def wrapped_future():
-            await future
-            self.running_coroutines.remove(fn)
-
+        #async def wrapped_future():
+            #await future
+            #self.running_coroutines.remove(fn)
+        asyncio.run(fn(*args, **kwargs))
         # asyncio.ensure_future(wrapped_future())
-        asyncio.ensure_future(wrapped_future())
+        #asyncio.ensure_future(wrapped_future())
 
     def is_running(self, fn):
         """
@@ -516,13 +519,13 @@ class Simulator:
 
     def consistent_loop(self, period, func):
         """Execute the robot at specificed frequency.
-        
-        period (int): the period in seconds to run func in 
+
+        period (int): the period in seconds to run func in
         func (function): the function to execute each loop
 
         func may take only TIMEOUT_VALUE seconds to finish execution
         """
-        while True:
+        while robot_on:
             next_call = time.time() + period
 
             self.loop_content(func)
@@ -532,21 +535,26 @@ class Simulator:
 
     def loop_content(self, func):
         """Execute one cycle of the robot."""
-        print("starting keyboard monitor")
+        
         func()
-        print("finished keyboard monitor")
+        
         
         self.robot.update_position()
         # self.robot.print_state()
 
-    def simulate(self):
+    def simulate_teleop(self):
         """Simulate execution of the robot code.
 
         Run setup_fn once before continuously looping loop_fn
         """
         self.teleop_setup()
         self.robot.update_position()
-        self.consistent_loop(self.robot.tick_rate, self.keyboard_control)
+        self.consistent_loop(self.robot.tick_rate, self.teleop_main)
+
+    def simulate_control(self):
+        
+        self.robot.update_position()
+        self.keyboard_control()
    
     
     def on_press(self, key):
@@ -601,12 +609,27 @@ class Simulator:
     
     def keyboard_control(self):
         print("entered keyboard")
-
+        self.robot.set_value("left_motor", "duty_cycle", self.gamepad.get_value("joystick_left_y"))
         with Listener(on_press=self.on_press, on_release=self.on_release) as l:
+            
             l.join()
 
-def main(queue):
+    def simulate_auto(self):
+        auto_thread = threading.Thread(group=None, target=self.autonomous_setup,
+                                        name="autonomous code thread", daemon=True)
+        # auto_thread = multiprocessing.Process(group=None, target=autonomous_setup_toplevel, args=(self,),
+        #                                 name="autonomous code thread", daemon=True)
+        auto_thread.start()
+        self.consistent_loop(self.robot.tick_rate,self.robot.update_position)
 
+def autonomous_setup_toplevel(sim):
+    sim.autonomous_setup()
+
+def main(queue, auto, control):
     simulator = Simulator(queue)
-    
-    simulator.simulate()
+    if auto:
+        simulator.simulate_auto()
+    elif control:
+        simulator.simulate_control()
+    else:
+        simulator.simulate_teleop()
