@@ -7,7 +7,7 @@ import sys
 robot_thread = None
 state_queue = None
 
-def start(auto=0, control = 1):
+def start(auto=0):
     """
     Start the robot thread
 
@@ -25,8 +25,10 @@ def start(auto=0, control = 1):
 
         # We utilize a daemon thread to such that the thread exits even if we
         # do not exit gracefully from __main__
-        robot_thread = threading.Thread(group=None, target=pimulator.main, args=(state_queue,auto, control),
+        robot_thread = threading.Thread(group=None, target=pimulator.main, args=(state_queue,auto),
                                         name="robot thread", daemon=True)
+        # robot_thread = multiprocessing.Process(group=None, target=pimulator.main, args=(state_queue,auto),
+        #                                 name="robot thread", daemon=True)
         robot_thread.start()
         print("robot started", file = sys.stderr)
         
@@ -49,4 +51,4 @@ def get_state():
     Attempt fails if no state is added after 3 seconds
     """
 
-    return state_queue.get(timeout=0.1)
+    return state_queue.get(timeout=0.01)

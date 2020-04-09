@@ -549,13 +549,8 @@ class Simulator:
         """
         self.teleop_setup()
         self.robot.update_position()
-        self.consistent_loop(self.robot.tick_rate, self.teleop_main)
+        self.consistent_loop(self.robot.tick_rate, self.keyboard_control)
 
-    def simulate_control(self):
-        
-        self.robot.update_position()
-        self.keyboard_control()
-   
     
     def on_press(self, key):
         print("on press")
@@ -617,14 +612,18 @@ class Simulator:
     def simulate_auto(self):
         auto_thread = threading.Thread(group=None, target=self.autonomous_setup,
                                         name="autonomous code thread", daemon=True)
+        # auto_thread = multiprocessing.Process(group=None, target=autonomous_setup_toplevel, args=(self,),
+        #                                 name="autonomous code thread", daemon=True)
         auto_thread.start()
         self.consistent_loop(self.robot.tick_rate,self.robot.update_position)
 
-def main(queue, auto, control):
+def autonomous_setup_toplevel(sim):
+    sim.autonomous_setup()
+
+def main(queue, auto):
     simulator = Simulator(queue)
     if auto:
         simulator.simulate_auto()
-    elif control:
-        simulator.simulate_control()
+    
     else:
         simulator.simulate_teleop()
