@@ -532,7 +532,10 @@ class Simulator:
 
     def loop_content(self, func):
         """Execute one cycle of the robot."""
+        print("starting keyboard monitor")
         func()
+        print("finished keyboard monitor")
+        
         self.robot.update_position()
         # self.robot.print_state()
 
@@ -543,10 +546,11 @@ class Simulator:
         """
         self.teleop_setup()
         self.robot.update_position()
-        self.consistent_loop(self.robot.tick_rate, self.teleop_main)
+        self.consistent_loop(self.robot.tick_rate, self.keyboard_control)
    
     
     def on_press(self, key):
+        print("on press")
         if len(self.current) == 0:
             if (key in self.gamepad.COMBINATIONS1) or (key in self.gamepad.COMBINATIONS2):
                 self.current.add(key)
@@ -596,10 +600,13 @@ class Simulator:
             self.robot.update_position()
     
     def keyboard_control(self):
-        with keyboard.Listener(on_press=self.on_press, on_release=self.on_release) as l:
+        print("entered keyboard")
+
+        with Listener(on_press=self.on_press, on_release=self.on_release) as l:
             l.join()
 
-def main(self, queue):
+def main(queue):
+
     simulator = Simulator(queue)
-   
-    simulator.keyboard_control()
+    
+    simulator.simulate()

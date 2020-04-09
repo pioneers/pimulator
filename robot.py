@@ -24,11 +24,13 @@ def start():
         # We utilize a daemon thread to such that the thread exits even if we
         # do not exit gracefully from __main__
         print("state queue initialized, starting robot thread", file = sys.stderr)
+        
         robot_thread = threading.Thread(group=None, target=pimulator.main, args=(state_queue,),
                                         name="robot thread", daemon=True)
         print("robot thread declared", file = sys.stderr)
         robot_thread.start()
         print("robot started", file = sys.stderr)
+        
         return True
 
 def stop():
