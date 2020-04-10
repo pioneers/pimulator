@@ -223,13 +223,13 @@ class GamepadClass:
 
     def __init__(self, set_num):
         self.set_num = set_num
-        self.t0 = time.time()
+        # self.t0 = time.time()
         self.joystick_left_x = self.sets[set_num][0]
         self.joystick_left_y =  self.sets[set_num][1]
         self.joystick_right_x =  self.sets[set_num][2]
         self.joystick_right_y =  self.sets[set_num][3]
-        self.durations = self.sets[set_num][4]         #lst of instr duration
-        self.i = 0                                        #index of insturction
+        # self.durations = self.sets[set_num][4]         #lst of instr duration
+        # self.i = 0                                        #index of insturction
 
     def get_value(self, device):
         now = time.time()
@@ -552,9 +552,7 @@ class Simulator:
       
         teleop_thread.start()
         print("thread started")
-        self.robot.update_position()
-
-        self.consistent_loop(self.robot.tick_rate, self.robot.update_position)
+        self.consistent_loop(self.robot.tick_rate, self.teleop_main)
 
     
     def on_press(self, key):
@@ -613,6 +611,8 @@ class Simulator:
         with Listener(on_press=self.on_press, on_release=self.on_release) as l:
             
             l.join()
+
+        print("exited keyboard")
 
     def simulate_auto(self):
         auto_thread = threading.Thread(group=None, target=self.autonomous_setup,
