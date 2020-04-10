@@ -580,52 +580,91 @@ class Simulator:
         elif len(self.current) == 1:
             elem = self.current.pop()
             self.current.add(elem)
-            if ((elem in self.gamepad.COMBINATIONS1) and (key in self.gamepad.COMBINATIONS2)) or ((elem in self.gamepad.COMBINATIONS2) and key in (key in self.gamepad.COMBINATIONS1)):
+            if ((elem in self.gamepad.COMBINATIONS1) and (key in self.gamepad.COMBINATIONS2)) or ((elem in self.gamepad.COMBINATIONS2) and (key in self.gamepad.COMBINATIONS1)):
                 self.current.add(key)
                 self.translate_to_movement()
         elif len(self.current) >= 2:
             pass
     
     def on_release(self, key):
+        print("on release")
         try:
             self.current.remove(key)
         except:
-            pass
-
+            return
+        if key == keyboard.KeyCode(char='w'):
+            self.gamepad.joystick_left_y = 0
+        # elif key == keyboard.KeyCode(char='d'):
+        #         self.gamepad.joystick_left_x = 0
+        elif key == keyboard.KeyCode(char='s'):
+            self.gamepad.joystick_left_y = 0
+        elif key == keyboard.Key.down:
+                self.gamepad.joystick_right_y = 0
+        elif key == keyboard.Key.up:
+            self.gamepad.joystick_right_y = 0
+        # elif key == keyboard.Key.right:
+        #         self.gamepad.joystick_right_x = 0
+            # self.change_movement(key)
+        
+    
     def translate_to_movement(self):
+        if len(self.current) == 0:
+            self.robot.update_position()
         for k in self.current:
             if k == keyboard.KeyCode(char='w'):
-                self.gamepad.joystick_left_y = 1
-               
-            elif k == keyboard.KeyCode(char='d'):
-                self.gamepad.joystick_left_x = 1
+                self.gamepad.joystick_left_y = -1
+            # elif k == keyboard.KeyCode(char='d'):
+            #     self.gamepad.joystick_left_x = 1
                 
-            elif k == keyboard.KeyCode(char='a'):
-                self.gamepad.joystick_left_x = -1
+            # elif k == keyboard.KeyCode(char='a'):
+            #     self.gamepad.joystick_left_x = 1
 
             elif k == keyboard.KeyCode(char='s'):
-                self.gamepad.joystick_left_y = -1
+                self.gamepad.joystick_left_y = 1
 
             elif k == keyboard.Key.up:
                 self.gamepad.joystick_right_y = 1
                
-            elif k == keyboard.Key.right:
-                self.gamepad.joystick_right_x = 1
+            # elif k == keyboard.Key.right:
+            #     self.gamepad.joystick_right_x = 1
                 
-            elif k == keyboard.Key.left:
-                self.gamepad.joystick_right_x = -1
+            # elif k == keyboard.Key.left:
+            #     self.gamepad.joystick_right_x = -1
 
             elif k == keyboard.Key.down:
                 self.gamepad.joystick_right_y = -1
-
-            self.robot.update_position()
+        self.robot.update_position()
+        print("exited translate")
     
+    # def change_movement(self, key):
+    #     if key == keyboard.KeyCode(char='w'):
+    #             self.gamepad.joystick_right_y = 0
+            # elif k == keyboard.KeyCode(char='d'):
+            #     self.gamepad.joystick_left_x = 1
+                
+            # elif k == keyboard.KeyCode(char='a'):
+            #     self.gamepad.joystick_left_x = -1
+
+            # elif k == keyboard.KeyCode(char='s'):
+            #     self.gamepad.joystick_left_y = -1
+
+            # elif k == keyboard.Key.up:
+            #     self.gamepad.joystick_right_y = 1
+               
+            # elif k == keyboard.Key.right:
+            #     self.gamepad.joystick_right_x = 1
+                
+            # elif k == keyboard.Key.left:
+            #     self.gamepad.joystick_right_x = -1
+
+            # elif k == keyboard.Key.down:
+            #     self.gamepad.joystick_right_y = -1
+        # self.robot.update_position()
     def keyboard_control(self):
         print("entered keyboard")
 
         with Listener(on_press=self.on_press, on_release=self.on_release) as l:
             l.join()
-
         print("exited keyboard")
 
     def simulate_auto(self):
