@@ -165,47 +165,6 @@ class GamepadClass:
              [ 3,  3,  3,  3]]
             ]
 
-    # COMBINATIONS = [
-    # {keyboard.Key.up, keyboard.KeyCode(char='w')},
-    # {keyboard.Key.up, keyboard.KeyCode(char='d')},
-    # {keyboard.Key.up, keyboard.KeyCode(char='a')},
-    # {keyboard.Key.up, keyboard.KeyCode(char='s')},
-
-    # {keyboard.Key.left, keyboard.KeyCode(char='w')},
-    # {keyboard.Key.left, keyboard.KeyCode(char='d')},
-    # {keyboard.Key.left, keyboard.KeyCode(char='a')},
-    # {keyboard.Key.left, keyboard.KeyCode(char='s')},
-
-    # {keyboard.Key.right, keyboard.KeyCode(char='w')},
-    # {keyboard.Key.right, keyboard.KeyCode(char='d')},
-    # {keyboard.Key.right, keyboard.KeyCode(char='a')},
-    # {keyboard.Key.right, keyboard.KeyCode(char='s')},
-
-    # {keyboard.Key.down, keyboard.KeyCode(char='w')},
-    # {keyboard.Key.down, keyboard.KeyCode(char='d')},
-    # {keyboard.Key.down, keyboard.KeyCode(char='a')},
-    # {keyboard.Key.down, keyboard.KeyCode(char='s')},
-
-    # {keyboard.KeyCode(char='w'), keyboard.Key.down},
-    # {keyboard.KeyCode(char='d'), keyboard.Key.down},
-    # {keyboard.KeyCode(char='a'), keyboard.Key.down},
-    # {keyboard.KeyCode(char='s'), keyboard.Key.down},
-
-    # {keyboard.KeyCode(char='w'), keyboard.Key.left},
-    # {keyboard.KeyCode(char='d'), keyboard.Key.left},
-    # {keyboard.KeyCode(char='a'), keyboard.Key.left},
-    # {keyboard.KeyCode(char='s'), keyboard.Key.left},
-
-    # {keyboard.KeyCode(char='w'), keyboard.Key.right},
-    # {keyboard.KeyCode(char='d'), keyboard.Key.right},
-    # {keyboard.KeyCode(char='a'), keyboard.Key.right},
-    # {keyboard.KeyCode(char='s'), keyboard.Key.right},
-
-    # {keyboard.KeyCode(char='w'), keyboard.Key.up},
-    # {keyboard.KeyCode(char='d'), keyboard.Key.up},
-    # {keyboard.KeyCode(char='a'), keyboard.Key.up},
-    # {keyboard.KeyCode(char='s'), keyboard.Key.up}
-    # ]
 
     COMBINATIONS1 = [
         keyboard.KeyCode(char='w'),
@@ -424,7 +383,7 @@ class Camera:
         for x in formatted_list:
             print(x)
 
-TIMEOUT_VALUE = 1 # seconds?
+TIMEOUT_VALUE = .1 # seconds?
 
 def timeout_handler(signum, frame):
     raise TimeoutError("studentCode timed out")
@@ -554,7 +513,6 @@ class Simulator:
         
         
         self.robot.update_position()
-        # self.robot.print_state()
 
     def simulate_teleop(self):
         """Simulate execution of the robot code.
@@ -636,30 +594,6 @@ class Simulator:
         self.robot.update_position()
         print("exited translate")
     
-    # def change_movement(self, key):
-    #     if key == keyboard.KeyCode(char='w'):
-    #             self.gamepad.joystick_right_y = 0
-            # elif k == keyboard.KeyCode(char='d'):
-            #     self.gamepad.joystick_left_x = 1
-                
-            # elif k == keyboard.KeyCode(char='a'):
-            #     self.gamepad.joystick_left_x = -1
-
-            # elif k == keyboard.KeyCode(char='s'):
-            #     self.gamepad.joystick_left_y = -1
-
-            # elif k == keyboard.Key.up:
-            #     self.gamepad.joystick_right_y = 1
-               
-            # elif k == keyboard.Key.right:
-            #     self.gamepad.joystick_right_x = 1
-                
-            # elif k == keyboard.Key.left:
-            #     self.gamepad.joystick_right_x = -1
-
-            # elif k == keyboard.Key.down:
-            #     self.gamepad.joystick_right_y = -1
-        # self.robot.update_position()
     def keyboard_control(self):
         print("entered keyboard")
 
