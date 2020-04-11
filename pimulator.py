@@ -552,16 +552,16 @@ class Simulator:
             return
         if key == keyboard.KeyCode(char='w'):
             self.gamepad.joystick_left_y = 0
-        # elif key == keyboard.KeyCode(char='d'):
-        #         self.gamepad.joystick_left_x = 0
+        elif key == keyboard.KeyCode(char='d'):
+                self.gamepad.joystick_left_x = 0
         elif key == keyboard.KeyCode(char='s'):
             self.gamepad.joystick_left_y = 0
         elif key == keyboard.Key.down:
                 self.gamepad.joystick_right_y = 0
         elif key == keyboard.Key.up:
             self.gamepad.joystick_right_y = 0
-        # elif key == keyboard.Key.right:
-        #         self.gamepad.joystick_right_x = 0
+        elif key == keyboard.Key.right:
+                self.gamepad.joystick_right_x = 0
             # self.change_movement(key)
         
     
@@ -571,11 +571,11 @@ class Simulator:
         for k in self.current:
             if k == keyboard.KeyCode(char='w'):
                 self.gamepad.joystick_left_y = -1
-            # elif k == keyboard.KeyCode(char='d'):
-            #     self.gamepad.joystick_left_x = 1
+            elif k == keyboard.KeyCode(char='d'):
+                self.gamepad.joystick_left_x = 1
                 
-            # elif k == keyboard.KeyCode(char='a'):
-            #     self.gamepad.joystick_left_x = 1
+            elif k == keyboard.KeyCode(char='a'):
+                self.gamepad.joystick_left_x = 1
 
             elif k == keyboard.KeyCode(char='s'):
                 self.gamepad.joystick_left_y = 1
@@ -583,11 +583,11 @@ class Simulator:
             elif k == keyboard.Key.up:
                 self.gamepad.joystick_right_y = 1
                
-            # elif k == keyboard.Key.right:
-            #     self.gamepad.joystick_right_x = 1
+            elif k == keyboard.Key.right:
+                self.gamepad.joystick_right_x = 1
                 
-            # elif k == keyboard.Key.left:
-            #     self.gamepad.joystick_right_x = -1
+            elif k == keyboard.Key.left:
+                self.gamepad.joystick_right_x = -1
 
             elif k == keyboard.Key.down:
                 self.gamepad.joystick_right_y = -1
