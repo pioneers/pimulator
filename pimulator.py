@@ -52,7 +52,7 @@ class RobotClass:
         Derived with reference to:
         https://chess.eecs.berkeley.edu/eecs149/documentation/differentialDrive.pdf
         """
-        lv = self.Wl * RobotClass.w_radius # * RobotClass.neg
+        lv = self.Wl * RobotClass.w_radius
         rv = self.Wr * RobotClass.w_radius
         radian = math.radians(self.dir)
         if (lv == rv):
@@ -612,7 +612,7 @@ class Simulator:
             self.robot.update_position()
         for k in self.current:
             if k == keyboard.KeyCode(char='w'):
-                self.gamepad.joystick_left_y = -1
+                self.gamepad.joystick_left_y = 1
             # elif k == keyboard.KeyCode(char='d'):
             #     self.gamepad.joystick_left_x = 1
                 
@@ -620,7 +620,7 @@ class Simulator:
             #     self.gamepad.joystick_left_x = 1
 
             elif k == keyboard.KeyCode(char='s'):
-                self.gamepad.joystick_left_y = 1
+                self.gamepad.joystick_left_y = -1
 
             elif k == keyboard.Key.up:
                 self.gamepad.joystick_right_y = 1
