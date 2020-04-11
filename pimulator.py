@@ -165,6 +165,13 @@ class GamepadClass:
              [ 3,  3,  3,  3]]
             ]
 
+    
+    INVALID_COMBINATIONS = [
+        {keyboard.KeyCode(char='w'), keyboard.KeyCode(char='s')},
+        {keyboard.KeyCode(char='a'), keyboard.KeyCode(char='d')},
+        {keyboard.Key.up, keyboard.Key.down},
+        {keyboard.Key.left, keyboard.Key.right}
+    ]
 
     COMBINATIONS1 = [
         keyboard.KeyCode(char='w'),
@@ -178,7 +185,7 @@ class GamepadClass:
         keyboard.Key.left,
         keyboard.Key.right,
         keyboard.Key.down
-        ]
+    ]
 
     def __init__(self, set_num):
         self.set_num = set_num
@@ -535,14 +542,16 @@ class Simulator:
                 self.current.add(key)
                 self.translate_to_movement()
                 
-        elif len(self.current) == 1:
+        elif len(self.current) >= 1:
             elem = self.current.pop()
             self.current.add(elem)
-            if ((elem in self.gamepad.COMBINATIONS1) and (key in self.gamepad.COMBINATIONS2)) or ((elem in self.gamepad.COMBINATIONS2) and (key in self.gamepad.COMBINATIONS1)):
+            # if ((elem in self.gamepad.COMBINATIONS1) and (key in self.gamepad.COMBINATIONS2)) or ((elem in self.gamepad.COMBINATIONS2) and (key in self.gamepad.COMBINATIONS1)):
+            if {elem, key} not in GamepadClass.INVALID_COMBINATIONS:
                 self.current.add(key)
                 self.translate_to_movement()
         elif len(self.current) >= 2:
             pass
+        print(self.current)
     
     def on_release(self, key):
         print("on release")
@@ -552,6 +561,8 @@ class Simulator:
             return
         if key == keyboard.KeyCode(char='w'):
             self.gamepad.joystick_left_y = 0
+        elif key == keyboard.KeyCode(char='a'):
+            self.gamepad.joystick_left_x = 0
         elif key == keyboard.KeyCode(char='d'):
                 self.gamepad.joystick_left_x = 0
         elif key == keyboard.KeyCode(char='s'):
@@ -561,6 +572,8 @@ class Simulator:
         elif key == keyboard.Key.up:
             self.gamepad.joystick_right_y = 0
         elif key == keyboard.Key.right:
+                self.gamepad.joystick_right_x = 0
+        elif key == keyboard.Key.left:
                 self.gamepad.joystick_right_x = 0
             # self.change_movement(key)
         
