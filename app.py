@@ -10,9 +10,10 @@ def start_teleop():
     print('Starting Teleop Mode!', file=sys.stderr)
     return str(robot.start(auto=0))
 
-@app.route('/start_auto')
+@app.route('/start_auto/<f: fil>')
 def start_auto():
     print('Starting Autonomous Mode!', file=sys.stderr)
+    print(fil, file=sys.stderr)
     return str(robot.start(auto=1))
 
 @app.route('/stop')

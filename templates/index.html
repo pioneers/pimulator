@@ -31,26 +31,36 @@
     </div>
 
     <button type="button" onclick="start_teleop()">Teleop simulation</button>
-    <button type="button" onclick="runAuto()">Autonomous Simulation </button>
+    <button type="button" onclick="start_auto()">Autonomous Simulation </button>
     <button type="button" onclick="stop()">stop simulation</button>
     <input type="file" id="input" accept="py">
-    <p id="warning" style="display:none">Please input a file</P>
+    <p id="warning"></p>
+    <p id="contents">   </p>
 
     <script src="{{ url_for('static', filename='js/base.js') }}"></script>
 
     <!--Auto Func -->
     <script>
-      var file = document.getElementById("input").value;
-      // read the file extension
-      var ext = document.getElementById("input").text.split(".").pop();
-      function runAuto() {
-        if (ext.equals("py")) {
-          //run autonomous on the file
-        } else {
-          // warning
-          document.getElementById("warning").style = "";
-        }
+      function handleFileSelect(evt) {
+        var files = evt.target.files; // FileList object
+
+          // Only process python files.
+          if (!files[0].type.match('text/plain')) {
+            document.getElementById("warning").innerHTML = "wrong file type";
+          } else {
+            document.getElementById("warning").innerHTML = "py file loaded";
+
+
+            var reader = new FileReader();
+            reader.onload = function(file) {
+              document.getElementById("contents").innerHTML = "<a href='" + reader.result + "'>link</a>";
+              start_auto(reader.result);
+            }
+            reader.readAsDataURL(files[0]);
+          }
       }
+
+      document.getElementById('input').addEventListener('change', handleFileSelect, false);
     </script>
 
 
