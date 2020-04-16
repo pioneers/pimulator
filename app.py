@@ -2,6 +2,9 @@ import datetime
 import time
 import robot
 import sys
+import urllib
+import os
+from base64 import b64decode
 from flask import Flask, render_template, jsonify
 app = Flask(__name__)
 
@@ -10,10 +13,14 @@ def start_teleop():
     print('Starting Teleop Mode!', file=sys.stderr)
     return str(robot.start(auto=0))
 
-@app.route('/start_auto/<f: fil>')
-def start_auto():
+@app.route('/start_auto/<f>')
+def start_auto(f):
     print('Starting Autonomous Mode!', file=sys.stderr)
-    print(fil, file=sys.stderr)
+    print(f, file=sys.stderr)
+    #h, encoded = f.split(",", 1)
+    #data = b64decode(encoded)
+    #with open("student_code.py", "wb") as file:
+    #    file.write(data)
     return str(robot.start(auto=1))
 
 @app.route('/stop')

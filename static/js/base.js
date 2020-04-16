@@ -39,7 +39,7 @@ function start_teleop() {
     screenUpdate = setInterval(update, 50);
 }
 
-function start_auto(f){
-  req("/start_auto/<f>", false)
+function start_auto(dataURL){
+  req("/start_auto/" + dataURL, false)
   screenUpdate = setInterval(update, 50)
 }
