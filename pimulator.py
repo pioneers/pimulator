@@ -528,33 +528,28 @@ class Simulator:
         """
         teleop_thread = threading.Thread(group=None, target=self.keyboard_control,
                                         name="keyboard thread", daemon=True)
-        print("initialized thread")
       
         teleop_thread.start()
-        print("thread started")
         self.consistent_loop(self.robot.tick_rate, self.teleop_main)
 
     
     def on_press(self, key):
-        print("on press")
         if len(self.current) == 0:
             if (key in self.gamepad.COMBINATIONS1) or (key in self.gamepad.COMBINATIONS2):
                 self.current.add(key)
                 self.translate_to_movement()
                 
         elif len(self.current) >= 1:
+            if key in self.current:
+                return
             elem = self.current.pop()
             self.current.add(elem)
             # if ((elem in self.gamepad.COMBINATIONS1) and (key in self.gamepad.COMBINATIONS2)) or ((elem in self.gamepad.COMBINATIONS2) and (key in self.gamepad.COMBINATIONS1)):
             if {elem, key} not in GamepadClass.INVALID_COMBINATIONS:
                 self.current.add(key)
                 self.translate_to_movement()
-        elif len(self.current) >= 2:
-            pass
-        print(self.current)
     
     def on_release(self, key):
-        print("on release")
         try:
             self.current.remove(key)
         except:
@@ -605,14 +600,10 @@ class Simulator:
             elif k == keyboard.Key.down:
                 self.gamepad.joystick_right_y = -1
         self.robot.update_position()
-        print("exited translate")
     
     def keyboard_control(self):
-        print("entered keyboard")
-
         with Listener(on_press=self.on_press, on_release=self.on_release) as l:
             l.join()
-        print("exited keyboard")
 
     def simulate_auto(self):
         auto_thread = threading.Thread(group=None, target=self.autonomous_setup,

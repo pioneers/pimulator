@@ -48,4 +48,4 @@ def get_state():
     Attempt fails if no state is added after 3 seconds
     """
 
-    return state_queue.get(timeout=3)
+    return state_queue.get(timeout=0.1)
