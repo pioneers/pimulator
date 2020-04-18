@@ -411,7 +411,7 @@ class ActionsClass:
 #######################################
 
 class Simulator:
-    def __init__(self, queue):
+    def __init__(self, queue, file):
         """Initialize new Simulator
 
         queue (queue.Queue): communicates robot state between threads
@@ -423,7 +423,7 @@ class Simulator:
         self.robot = RobotClass(self.queue)
         self.init_gamepad()
         self.actions = ActionsClass(self.robot)
-        self.load_student_code()
+        self.load_student_code(file)
 
     def init_gamepad(self):
         control_types = ['tank', 'arcade', 'other1', 'other2']
@@ -500,9 +500,9 @@ class Simulator:
 def autonomous_setup_toplevel(sim):
     sim.autonomous_setup()
 
-def main(queue, auto):
-    simulator = Simulator(queue)
-    if auto:
+def main(queue, auto, file=None):
+    simulator = Simulator(queue, file)
+    if auto and file:
         simulator.simulate_auto()
     else:
         simulator.simulate_teleop()

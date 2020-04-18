@@ -18,10 +18,10 @@ def start_auto(f):
     print('Starting Autonomous Mode!', file=sys.stderr)
     print(f, file=sys.stderr)
     #h, encoded = f.split(",", 1)
-    #data = b64decode(encoded)
-    #with open("student_code.py", "wb") as file:
-    #    file.write(data)
-    return str(robot.start(auto=1))
+    data = b64decode(f)
+    with open("student_code.py", "wb") as file:
+        file.write(data)
+    return str(robot.start(1,file))
 
 @app.route('/stop')
 def stop():
