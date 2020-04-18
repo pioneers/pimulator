@@ -21,7 +21,7 @@ def start_auto(f):
     data = b64decode(f)
     with open("student_code.py", "wb") as file:
         file.write(data)
-    return str(robot.start(1,file))
+    return str(robot.start(auto=1))
 
 @app.route('/stop')
 def stop():

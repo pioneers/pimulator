@@ -411,7 +411,7 @@ class ActionsClass:
 #######################################
 
 class Simulator:
-    def __init__(self, queue, file):
+    def __init__(self, queue):
         """Initialize new Simulator
 
         queue (queue.Queue): communicates robot state between threads
@@ -423,7 +423,7 @@ class Simulator:
         self.robot = RobotClass(self.queue)
         self.init_gamepad()
         self.actions = ActionsClass(self.robot)
-        self.load_student_code(file)
+        self.load_student_code()
 
     def init_gamepad(self):
         control_types = ['tank', 'arcade', 'other1', 'other2']
@@ -432,7 +432,7 @@ class Simulator:
         assert (control_type_index != -1) , "Invalid gamepad mode"
         self.gamepad = GamepadClass(control_type_index)
 
-    def load_student_code(self, student_code_file_name="student_code_file.py"):
+    def load_student_code(self, student_code_file_name="student_code.py"):
         """Load the student code from the file"""
 
         # Load student code
@@ -500,9 +500,9 @@ class Simulator:
 def autonomous_setup_toplevel(sim):
     sim.autonomous_setup()
 
-def main(queue, auto, file=None):
-    simulator = Simulator(queue, file)
-    if auto and file:
+def main(queue, auto):
+    simulator = Simulator(queue)
+    if auto:
         simulator.simulate_auto()
     else:
         simulator.simulate_teleop()
