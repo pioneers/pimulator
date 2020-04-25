@@ -40,7 +40,6 @@ function start_teleop() {
 }
 
 function start_auto(dataURL){
-  req("/start_auto/" + dataURL, false)
   var splitStr = dataURL.split("base64,", 2)
   req("/start_auto/" + splitStr[1], false)
   screenUpdate = setInterval(update, 50)
